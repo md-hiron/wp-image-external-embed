@@ -68,7 +68,7 @@ add_action( 'wp_footer', 'bs24_iee_add_embed_popup' );
  */
 function bs24_iee_add_credit_fields( $form_fields, $post ){
     $credit_text = !empty( get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) : '';
-    $credit_url = !empty( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) ? esc_ur( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) : '';
+    $credit_url = !empty( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) ? esc_url( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) : '';
 
     $form_fields['bs24_iee_image_credit'] = array(
         'label' => __( 'Image Credit' , 'bs24-image-external-embed' ),
@@ -90,70 +90,29 @@ function bs24_iee_add_credit_fields( $form_fields, $post ){
 add_filter( 'attachment_fields_to_edit', 'bs24_iee_add_credit_fields', 10, 2 );
 
 /**
- * add credit field to image attachment edit screen
+ * Save image embed credit meta fields
  */
-// function bs24_iee_add_credit_fields(){
-//     add_meta_box(
-//         'bs24_iee_image_custom_field',
-//         __( 'Embed image credit fields', 'bs24-image-external-embed' ),
-//         'bs24_iee_credit_fields_callback',
-//         'attachment',
-//         'side'
-//     );
-// }
+function bs24_iee_save_credit_field_data( $post, $attachment ){
+    if( isset( $attachment['bs24_iee_image_credit'] ) ){
+        update_post_meta( $post['ID'], 'bs24_iee_image_credit', sanitize_text_field( $attachment['bs24_iee_image_credit'] ) );
+    }
 
-//add_action( 'add_meta_boxes', 'bs24_iee_add_credit_fields' );
+    if( isset( $attachment['bs24_iee_credit_url'] ) ){
+        update_post_meta( $post['ID'], 'bs24_iee_credit_url', esc_url( sanitize_text_field( $attachment['bs24_iee_credit_url'] ) ) );
+    }
+
+    return $post;
+}
+add_filter( 'attachment_fields_to_save', 'bs24_iee_save_credit_field_data', 10, 3 );
 
 /**
- * callback function for image credit custom meta field
+ * Register custom REST API endpoint for getting image credit data by javascript
  */
-function bs24_iee_credit_fields_callback( $post ){
-    wp_nonce_field( basename( __FILE__ ), 'bs24_image_credit_nonce' );
-
-    $credit_text = !empty( get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) : '';
-    $credit_url = !empty( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) ? esc_ur( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) : '';
-    ?>
-    <div class="bs24-credit-field-wrap">
-        <p>
-            <label><?php echo __( 'Image Credit' , 'bs24-image-external-embed' ); ?></label>
-            <div>
-                <input type="text" name="bs24_iee_image_credit", id="bs24_iee_image_credit" value="<?php echo $credit_text; ?>" style="width: 100%">
-            </div>
-        </p>
-        <p>
-            <label><?php echo __( 'Image Credit URL' , 'bs24-image-external-embed' ); ?></label>
-            <div>
-                <input type="text" name="bs24_iee_credit_url", id="bs24_iee_credit_url" value="<?php echo $credit_url; ?>" style="width: 100%">
-            </div>
-        </p>
-    </div>
-    
-    <?php
+function bs24_iee_register_image_url_endpoint(){
+    register_rest_route( 'wp-json/v1', '/image-url/(?P<id>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'bs24_iee_get_image_url',
+        'permission_callback' => '__return_true'
+    ) );
 }
-
-/**
- * Save image credit meta to database
- */
-function bs24_iee_save_image_credit_meta( $post_id ){
-    if( !isset( $_POST['bs24_image_credit_nonce'] ) || !wp_verify_nonce( $_POST['bs24_image_credit_nonce'], basename( __FILE__ ) ) ){
-        return;
-    }
-
-    //check if user has permission to autosave 
-    if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){
-        return;
-    }
-
-    if( 'attachment' !== get_post_type( $post_id ) ){
-        return;
-    }
-
-    if( isset( $_POST['bs24_iee_image_credit'] ) ){
-        update_post_meta( $post_id, 'bs24_iee_image_credit', wp_kses_post( $_POST['bs24_iee_image_credit'] ) );
-    }
-
-    if( isset( $_POST['bs24_iee_credit_url'] ) ){
-        update_post_meta( $post_id, 'bs24_iee_credit_url', esc_url( $_POST['bs24_iee_credit_url'] ) );
-    }
-}
-// add_action( 'save_post', 'bs24_iee_save_image_credit_meta' );
+add_action( 'rest_api_init', 'bs24_iee_register_image_url_endpoint' );
