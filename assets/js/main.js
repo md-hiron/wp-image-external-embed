@@ -2,10 +2,10 @@
     $(document).ready(function(){
         $('img').on('contextmenu', function(e){
             e.preventDefault();
-            const imgSrc   = $(this).attr('src');
-            const imgWidth = Number( $(this).attr('width') );
+            const imgSrc    = $(this).attr('src');
+            const imgWidth  = Number( $(this).attr('width') );
             const imgHeight = Number( $(this).attr('height') );
-            const imgAlt = $(this).attr('alt');
+            const imgAlt    = $(this).attr('alt');
 
             const largeImgDimentions = getImageScaleDimensions( imgWidth, imgHeight, 500  );
             const smallImgDimentions = getImageScaleDimensions( imgWidth, imgHeight, 300  );
@@ -68,7 +68,7 @@
          * @returns object
          */
         function getImageScaleDimensions( orgWidth, orgHeight, expWidth ){
-            if( !orgWidth || !orgHeight  ){
+            if( !orgWidth || !orgHeight || !expWidth  ){
                 return false;
             }
 

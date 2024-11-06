@@ -34,8 +34,8 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  * Enqueue necessary scripts and styles 
  */
 function bs24_iee_enqueue_scrips(){
-    wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), time() );
-    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), time(), true );
+    wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.0' );
+    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.0', true );
 }
 
 add_action( 'wp_enqueue_scripts', 'bs24_iee_enqueue_scrips' );
@@ -152,8 +152,10 @@ function bs24_get_attachment_id_by_url( $url ){
     //sanitize url
     $url = esc_url_raw( $url );
 
+    $filtered_url = preg_replace('/-\d+x\d+(?=\.(jpg|jpeg|png|gif|webp)$)/i', '', $url);
+
     // using WP built in function to get attachment id from url
-    $attachment_id = attachment_url_to_postid( $url );
+    $attachment_id = attachment_url_to_postid( $filtered_url );
 
     return $attachment_id ? intval( $attachment_id ) : false;
 }
