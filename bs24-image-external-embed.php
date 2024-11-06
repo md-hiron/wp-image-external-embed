@@ -23,6 +23,14 @@ define( 'BS24_IEE_DIR', plugin_dir_path(__FILE__) );
 define( 'BS24_IEE_URL', plugin_dir_url(__FILE__) );
 
 /**
+ * Plugin Internalization
+ */
+function bs24_iee_textdomain_load(){
+    load_plugin_textdomain( 'bs24-image-external-embed', false, BS24_IEE_DIR . 'languages' );
+}
+add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
+
+/**
  * Enqueue necessary scripts and styles 
  */
 function bs24_iee_enqueue_scrips(){
@@ -40,21 +48,21 @@ function bs24_iee_add_embed_popup(){
     <div id="bs24-embed-popup" class="bs24-embed-popup-wrap">
         <div class="bs24-embed-popup-container">
             <div class="bs24-embed-popup-header">
-                <h2>Embed a Photo</h2>
+                <h2><?php _e( 'Ein Foto einbetten', 'bs24-image-external-embed' );?></h2>
             </div>
             <div class="bs24-embed-popup-content">
-                <h3>Copy this code to embed this photo on your site:</h3>
+                <h3><?php _e( 'Kopieren Sie diesen Code, um dieses Foto auf Ihrer Site einzubetten:', 'bs24-image-external-embed' );?></h3>
                 <div class="bs24-embed-image-box">
-                    <h4>Large Image (500 pixels):</h4>
+                    <h4><?php _e( 'Großes Bild (500 Pixel):','bs24-image-external-embed' );?></h4>
                     <textarea id="bs24-embed-large-image-input" class="bs24-embed-image-input" readonly></textarea>
                 </div>
                 <div class="bs24-embed-image-box">
-                    <h4>Small Image (320 pixels):</h4>
+                    <h4><?php _e( 'Kleines Bild (320 Pixel):','bs24-image-external-embed' );?></h4>
                     <textarea id="bs24-embed-small-image-input" class="bs24-embed-image-input" readonly></textarea>
                 </div>
             </div>
             <div class="bs24-embed-popup-footer">
-                <button class="bs24-embed-popup-close">Done</button>
+                <button class="bs24-embed-popup-close"><?php _e( 'Erledigt', 'bs24-image-external-embed' );?></button>
             </div>
         </div>
     </div>
@@ -109,10 +117,44 @@ add_filter( 'attachment_fields_to_save', 'bs24_iee_save_credit_field_data', 10, 
  * Register custom REST API endpoint for getting image credit data by javascript
  */
 function bs24_iee_register_image_url_endpoint(){
-    register_rest_route( 'wp-json/v1', '/image-url/(?P<id>\d+)', array(
-        'methods' => 'GET',
+    register_rest_route( 'bs24/v1', '/image-meta', array(
+        'methods'  => 'GET',
         'callback' => 'bs24_iee_get_image_url',
         'permission_callback' => '__return_true'
     ) );
 }
 add_action( 'rest_api_init', 'bs24_iee_register_image_url_endpoint' );
+
+/**
+ * Callback function for rest api data
+ */
+function bs24_iee_get_image_url( $data ){
+    $attachment_url = $data->get_param('url');
+    $attachment_id = bs24_get_attachment_id_by_url( $attachment_url );
+
+    $credit_text   = !empty( get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) : '';
+    $credit_url    = !empty( get_post_meta( $attachment_id, 'bs24_iee_credit_url', true ) ) ?  esc_url( get_post_meta( $attachment_id, 'bs24_iee_credit_url', true ) ) : '';
+
+    return new WP_REST_Response( array(
+        'credit_text' => $credit_text,
+        'credit_url'  => $credit_url,
+    ) );
+}
+
+/**
+ * Get attachment id from URL
+ */
+function bs24_get_attachment_id_by_url( $url ){
+    if( empty( $url ) ){
+        return false;
+    }
+
+    //sanitize url
+    $url = esc_url_raw( $url );
+
+    // using WP built in function to get attachment id from url
+    $attachment_id = attachment_url_to_postid( $url );
+
+    return $attachment_id ? intval( $attachment_id ) : false;
+}
+
