@@ -50,13 +50,18 @@
          */
         function getEmbedImage( imgSrc, imageAttr, imageCredit ){
             const pageLink = window.location.href;
-            let html = `<div><a href="${pageLink}" rel="follow" target="_blank">
-                        <img src="${imgSrc}" ${imageAttr} nopin="nopin" ondragstart="return false;" onselectstart="return false;" oncontextmenu="return false;" />
+            let caption = '';
+
+            if( imageCredit.img_caption ){
+                caption = ' - '+imageCredit.img_caption;
+            }
+            let html = `<div style="text-align: center"><a href="${pageLink}" rel="follow" target="_blank">
+                        <img src="${imgSrc}" alt="${imageCredit?.credit_text + caption}" ${imageAttr} nopin="nopin" ondragstart="return false;" onselectstart="return false;" oncontextmenu="return false;" />
                     </a></div>`;
             
             //check if image credit object is exist
             if( typeof imageCredit === 'object' && imageCredit !== null && imageCredit.credit_text !== '' ){
-                html += `<div style='color:#444;'><small><a style="text-decoration:none;color:#444;" href="${imageCredit?.credit_url}" target="_blank">${imageCredit?.credit_text}</a></small></div>`;
+                html += `<div style='color:#444; text-align: center'><small><a style="text-decoration:none;color:#444;" href="https://www.badsanieren24.de" target="_blank">${imageCredit?.credit_text + caption}</a></small></div>`;
             }
 
             return minifyHTML( html );

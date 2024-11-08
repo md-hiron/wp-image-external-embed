@@ -51,7 +51,7 @@ function bs24_iee_add_embed_popup(){
     <div id="bs24-embed-popup" class="bs24-embed-popup-wrap">
         <div class="bs24-embed-popup-container">
             <div class="bs24-embed-popup-header">
-                <h2><?php _e( 'Ein Foto einbetten', 'bs24-image-external-embed' );?></h2>
+                <h2><?php _e( 'Dieses Foto einbetten', 'bs24-image-external-embed' );?></h2>
             </div>
             <div class="bs24-embed-popup-content">
                 <h3><?php _e( 'Kopieren Sie diesen Code, um dieses Foto auf Ihrer Site einzubetten:', 'bs24-image-external-embed' );?></h3>
@@ -80,20 +80,12 @@ add_action( 'wp_footer', 'bs24_iee_add_embed_popup' );
  */
 function bs24_iee_add_credit_fields( $form_fields, $post ){
     $credit_text = !empty( get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) : '';
-    $credit_url = !empty( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) ? esc_url( get_post_meta( $post->ID, 'bs24_iee_credit_url', true ) ) : '';
 
     $form_fields['bs24_iee_image_credit'] = array(
-        'label' => __( 'Image Credit' , 'bs24-image-external-embed' ),
+        'label' => __( 'Bildnachweis' , 'bs24-image-external-embed' ),
         'type'  => 'text',
         'value' => $credit_text,
         'helps' =>  __( 'Enter Credit text for this image (used for embedding)' , 'bs24-image-external-embed' )
-    );
-
-    $form_fields['bs24_iee_credit_url'] = array(
-        'label' => __( 'Image Credit Url' , 'bs24-image-external-embed' ),
-        'type'  => 'text',
-        'value' => $credit_url,
-        'helps' =>  __( 'Enter credit url for this image (used for embedding)' , 'bs24-image-external-embed' )
     );
 
     return $form_fields;
@@ -136,13 +128,11 @@ function bs24_iee_get_image_url( $data ){
     $attachment_url = get_site_url() . $data->get_param('url');
     $attachment_id = bs24_get_attachment_id_by_url( $attachment_url );
 
-    $credit_text   = !empty( get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) : '';
-    $credit_url    = !empty( get_post_meta( $attachment_id, 'bs24_iee_credit_url', true ) ) ?  esc_url( get_post_meta( $attachment_id, 'bs24_iee_credit_url', true ) ) : '';
+    $credit_text   = !empty( get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) : __( 'Badsanieren24', 'bs24-image-external-embed' );
 
     return new WP_REST_Response( array(
-        'image_url'   => $attachment_url,
         'credit_text' => $credit_text,
-        'credit_url'  => $credit_url,
+        'img_caption'  => wp_get_attachment_caption( $attachment_id ),
     ) );
 }
 
