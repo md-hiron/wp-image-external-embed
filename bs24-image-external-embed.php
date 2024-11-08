@@ -35,9 +35,8 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  */
 function bs24_iee_enqueue_scrips(){
     wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.0' );
-    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), time(), true );
+    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.2', true );
     wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
-        'nonce'       => wp_create_nonce( 'bs24_rest' ),
         'siteUrl' => get_site_url()
     ) );
 }
