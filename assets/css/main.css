@@ -71,6 +71,7 @@ button.bs24-embed-popup-close {
     text-decoration: none;
     line-height: 1;
     transition: all 0.5s ease 0s;
+    border-color: #ed7200;
 }
 
 button.bs24-embed-popup-close:focus{
@@ -79,6 +80,7 @@ button.bs24-embed-popup-close:focus{
 
 button.bs24-embed-popup-close:hover{
     background-color: #ff8113;
+    border-color: #ff8113;
 }
 
 .bs24-embed-image-box textarea {

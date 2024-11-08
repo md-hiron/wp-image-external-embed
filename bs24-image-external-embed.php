@@ -101,10 +101,6 @@ function bs24_iee_save_credit_field_data( $post, $attachment ){
         update_post_meta( $post['ID'], 'bs24_iee_image_credit', sanitize_text_field( $attachment['bs24_iee_image_credit'] ) );
     }
 
-    if( isset( $attachment['bs24_iee_credit_url'] ) ){
-        update_post_meta( $post['ID'], 'bs24_iee_credit_url', esc_url( sanitize_text_field( $attachment['bs24_iee_credit_url'] ) ) );
-    }
-
     return $post;
 }
 add_filter( 'attachment_fields_to_save', 'bs24_iee_save_credit_field_data', 10, 3 );
