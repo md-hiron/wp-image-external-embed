@@ -35,7 +35,11 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  */
 function bs24_iee_enqueue_scrips(){
     wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.0' );
-    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.0', true );
+    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), time(), true );
+    wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
+        'nonce'       => wp_create_nonce( 'bs24_rest' ),
+        'siteUrl' => get_site_url()
+    ) );
 }
 
 add_action( 'wp_enqueue_scripts', 'bs24_iee_enqueue_scrips' );
@@ -129,13 +133,14 @@ add_action( 'rest_api_init', 'bs24_iee_register_image_url_endpoint' );
  * Callback function for rest api data
  */
 function bs24_iee_get_image_url( $data ){
-    $attachment_url = $data->get_param('url');
+    $attachment_url = get_site_url() . $data->get_param('url');
     $attachment_id = bs24_get_attachment_id_by_url( $attachment_url );
 
     $credit_text   = !empty( get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) : '';
     $credit_url    = !empty( get_post_meta( $attachment_id, 'bs24_iee_credit_url', true ) ) ?  esc_url( get_post_meta( $attachment_id, 'bs24_iee_credit_url', true ) ) : '';
 
     return new WP_REST_Response( array(
+        'image_url'   => $attachment_url,
         'credit_text' => $credit_text,
         'credit_url'  => $credit_url,
     ) );
@@ -159,4 +164,3 @@ function bs24_get_attachment_id_by_url( $url ){
 
     return $attachment_id ? intval( $attachment_id ) : false;
 }
-

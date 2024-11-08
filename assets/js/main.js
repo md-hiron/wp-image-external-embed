@@ -21,8 +21,10 @@
                 smallImageAttr = `width="${smallImgDimentions.width}" height="${smallImgDimentions.height}"`;
             }
 
+            const imgUrl = imgSrc.replace( bs24Data.siteUrl, '' );
+
             //run image meta api for image meta data
-            fetch_image_meta( window.location.origin + '/wp-test', imgSrc ).then( function( imageCredit ){
+            fetch_image_meta( bs24Data.siteUrl, imgUrl ).then( function( imageCredit ){
                
                 $('#bs24-embed-large-image-input').val( getEmbedImage( imgSrc, largeImageAttr, imageCredit ) );
                 $('#bs24-embed-small-image-input').val( getEmbedImage( imgSrc, smallImageAttr, imageCredit ) );
@@ -95,14 +97,19 @@
 
         /**
          * Fetch Image meta API 
-         * @param {string} apiEndpoint API endpoint for image meta
+         * @param {string} siteUrl API endpoint for image meta
          * @param {string} url Attachment URL
          * @returns {Promise}
          */
-        async function fetch_image_meta( apiEndpoint, url ){
+        async function fetch_image_meta( siteUrl, url ){
             try{
-                const response = await fetch( apiEndpoint + '/wp-json/bs24/v1/image-meta?url='+ url );
-                const data     = await response.json();
+                const response = await fetch( siteUrl + '/wp-json/bs24/v1/image-meta?url='+ url );
+
+                if( !response.ok ){
+                    throw new Error( `HTTP error! status: ${response.status}` );
+                }
+
+                const data = await response.json();
                 
                 return data;
             }catch( error ){
