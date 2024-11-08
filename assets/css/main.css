@@ -106,3 +106,8 @@ button.bs24-embed-popup-close:hover{
     outline: none;
     border-color: #ccc;
 }
+
+img {
+    -webkit-user-drag: none; /* For Safari and Chrome */
+    user-drag: none;         /* Standard CSS property */
+}
