@@ -60,7 +60,7 @@
 button.bs24-embed-popup-close {
     display: inline-block;
     border-radius: 4px;
-    padding: 10px 15px;
+    padding: 8px 18px;
     text-decoration: none;
     background-clip: border-box;
     background-color: #ed7200;
@@ -119,5 +119,5 @@ p.bs24-embed-popup-desc {
 }
 
 .bs24-embed-popup-desc a{
-    color: #0067ce;
+    color: #999;
 }

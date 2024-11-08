@@ -6,7 +6,7 @@
  * @wordpress-plugin
  * Plugin Name:       BS24 Image External Embed
  * Description:       A WordPress plugin that embed image for external use
- * Version:           1.0.4
+ * Version:           1.0.5
  * Author:            Md Hiron Mia
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -34,7 +34,7 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  * Enqueue necessary scripts and styles 
  */
 function bs24_iee_enqueue_scrips(){
-    wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.4' );
+    wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.6' );
     wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.4', true );
     wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
         'siteUrl' => get_site_url()
@@ -63,7 +63,7 @@ function bs24_iee_add_embed_popup(){
                     <h4><?php _e( 'Kleines Bild (320 Pixel):','bs24-image-external-embed' );?></h4>
                     <textarea id="bs24-embed-small-image-input" class="bs24-embed-image-input" readonly></textarea>
                 </div>
-                <p class="bs24-embed-popup-desc"><?php _e( '' ); echo wp_kses_post( __('Dieses Bild wird Ihnen zur Verfügung gestellt und unterliegt den Nutzungsbedingungen von ', 'bs24-image-external-embed') . '<a href="https://www.badsanieren24.de">'. __( 'Badsanieren24', 'bs24-image-external-embed' ) .'</a>.' )?></p>
+                <p class="bs24-embed-popup-desc"><?php _e( '' ); echo wp_kses_post( __('Dieses Bild wird Ihnen zur Verfügung gestellt und unterliegt den ', 'bs24-image-external-embed') . '<a href="https://www.badsanieren24.de/haftungsausschluss">'. __( 'Nutzungsbedingungen ', 'bs24-image-external-embed' ) .'</a>'. __( 'von Badsanieren24', 'bs24-image-external-embed' ) )?></p>
             </div>
             <div class="bs24-embed-popup-footer">
                 <button class="bs24-embed-popup-close"><?php _e( 'Ok', 'bs24-image-external-embed' );?></button>
