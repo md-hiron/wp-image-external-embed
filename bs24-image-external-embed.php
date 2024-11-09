@@ -34,11 +34,14 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  * Enqueue necessary scripts and styles 
  */
 function bs24_iee_enqueue_scrips(){
-    wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.1.1' );
-    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.1.2', true );
-    wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
-        'siteUrl' => get_site_url()
-    ) );
+    if( ! is_user_logged_in() ){
+        wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.1.1' );
+        wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.1.2', true );
+        wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
+            'siteUrl' => get_site_url()
+        ) );
+    }
+    
 }
 
 add_action( 'wp_enqueue_scripts', 'bs24_iee_enqueue_scrips' );
