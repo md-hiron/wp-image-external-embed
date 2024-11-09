@@ -71,7 +71,8 @@ button.bs24-embed-popup-close {
     text-decoration: none;
     line-height: 1;
     transition: all 0.5s ease 0s;
-    border-color: #ed7200;
+    border: 1px solid transparent;
+    cursor: pointer;
 }
 
 button.bs24-embed-popup-close:focus{

@@ -8,7 +8,7 @@
             const imgAlt    = $(this).attr('alt');
 
             const largeImgDimentions = getImageScaleDimensions( imgWidth, imgHeight, 500  );
-            const smallImgDimentions = getImageScaleDimensions( imgWidth, imgHeight, 300  );
+            const smallImgDimentions = getImageScaleDimensions( imgWidth, imgHeight, 320  );
 
             let largeImageAttr = '';
             let smallImageAttr = '';
@@ -25,15 +25,14 @@
 
             //run image meta api for image meta data
             fetch_image_meta( bs24Data.siteUrl, imgUrl ).then( function( imageCredit ){
-               
-                $('#bs24-embed-large-image-input').val( getEmbedImage( imgSrc, largeImageAttr, imageCredit ) );
-                $('#bs24-embed-small-image-input').val( getEmbedImage( imgSrc, smallImageAttr, imageCredit ) );
+                $('#bs24-embed-large-image-input').val( getEmbedImage( imageCredit.img_medium, largeImageAttr, imageCredit ) );
+                $('#bs24-embed-small-image-input').val( getEmbedImage( imageCredit.img_small, smallImageAttr, imageCredit ) );
 
                 $('#bs24-embed-popup').show();
             } );
         });
 
-        $('.bs24-embed-image-input').on('focus', function(){
+        $('.bs24-embed-image-input').on('focus click', function(){
             $(this).select();
         });
 
