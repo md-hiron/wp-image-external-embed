@@ -37,6 +37,8 @@
 
         $('.bs24-embed-popup-close').on('click', function(){
             $('#bs24-embed-popup').hide();
+            $('#bs24-embed-large-image-input').val('');
+            $('#bs24-embed-small-image-input').val('');
         });
 
         /**

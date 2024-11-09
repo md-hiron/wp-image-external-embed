@@ -6,7 +6,7 @@
  * @wordpress-plugin
  * Plugin Name:       BS24 Image External Embed
  * Description:       A WordPress plugin that embed image for external use
- * Version:           1.2.1
+ * Version:           1.2.2
  * Author:            Md Hiron Mia
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -22,6 +22,9 @@ if( ! defined( 'WPINC' ) ){
 define( 'BS24_IEE_DIR', plugin_dir_path(__FILE__) );
 define( 'BS24_IEE_URL', plugin_dir_url(__FILE__) );
 
+//Define plugin version
+define( 'BS24_IEE_VERSION', '1.2.2' );
+
 /**
  * Plugin Internalization
  */
@@ -35,8 +38,8 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  */
 function bs24_iee_enqueue_scrips(){
     if( ! is_user_logged_in() ){
-        wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.2.1' );
-        wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.2.1', true );
+        wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), BS24_IEE_VERSION );
+        wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), BS24_IEE_VERSION, true );
         wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
             'siteUrl' => get_site_url()
         ) );
