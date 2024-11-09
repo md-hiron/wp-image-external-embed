@@ -6,7 +6,7 @@
  * @wordpress-plugin
  * Plugin Name:       BS24 Image External Embed
  * Description:       A WordPress plugin that embed image for external use
- * Version:           1.1.1
+ * Version:           1.2.1
  * Author:            Md Hiron Mia
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -35,8 +35,8 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  */
 function bs24_iee_enqueue_scrips(){
     if( ! is_user_logged_in() ){
-        wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.1.1' );
-        wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.1.2', true );
+        wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.2.1' );
+        wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.2.1', true );
         wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
             'siteUrl' => get_site_url()
         ) );
@@ -57,7 +57,7 @@ function bs24_iee_add_embed_popup(){
                 <h2><?php _e( 'Dieses Foto einbetten', 'bs24-image-external-embed' );?></h2>
             </div>
             <div class="bs24-embed-popup-content">
-                <h3><?php _e( 'Kopieren Sie diesen Code, um dieses Foto auf Ihrer Site einzubetten:', 'bs24-image-external-embed' );?></h3>
+                <h3><?php _e( 'Kopieren Sie diesen Code, um dieses Foto auf Ihrer Webseite einzubetten:', 'bs24-image-external-embed' );?></h3>
                 <div class="bs24-embed-image-box">
                     <h4><?php _e( 'Großes Bild (500 Pixel):','bs24-image-external-embed' );?></h4>
                     <textarea id="bs24-embed-large-image-input" class="bs24-embed-image-input" readonly></textarea>
@@ -85,10 +85,10 @@ function bs24_iee_add_credit_fields( $form_fields, $post ){
     $credit_text = !empty( get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $post->ID, 'bs24_iee_image_credit', true ) : '';
 
     $form_fields['bs24_iee_image_credit'] = array(
-        'label' => __( 'Bildnachweis' , 'bs24-image-external-embed' ),
+        'label' => __( 'Credit' , 'bs24-image-external-embed' ),
         'type'  => 'text',
         'value' => $credit_text,
-        'helps' =>  __( 'Enter Credit text for this image (used for embedding)' , 'bs24-image-external-embed' )
+        'helps' =>  __( 'Bildnachweis' , 'bs24-image-external-embed' )
     );
 
     return $form_fields;
@@ -102,11 +102,33 @@ add_filter( 'attachment_fields_to_edit', 'bs24_iee_add_credit_fields', 10, 2 );
 function bs24_iee_save_credit_field_data( $post, $attachment ){
     if( isset( $attachment['bs24_iee_image_credit'] ) ){
         update_post_meta( $post['ID'], 'bs24_iee_image_credit', sanitize_text_field( $attachment['bs24_iee_image_credit'] ) );
-    }
 
+        //delete transient
+        delete_transient( 'bs24_iee_image_' . $post['ID'] );
+    }
     return $post;
 }
 add_filter( 'attachment_fields_to_save', 'bs24_iee_save_credit_field_data', 10, 3 );
+
+/**
+ * delete transient data on attachment metadata change
+ */
+function bs24_iee_delete_transient_on_image_metadata_update( $metadata, $attachment_id ){
+    //delete transient
+    delete_transient( 'bs24_iee_image_' . $attachment_id );
+
+    return $metadata;
+}
+add_filter( 'wp_update_attachment_metadata', 'bs24_iee_delete_transient_on_image_metadata_update', 10, 2 );
+
+/**
+ * Delete transient on attachment update
+ */
+function bs24_iee_delete_transient_on_attachment_update( $attachment_id ){
+    //delete transient
+    delete_transient( 'bs24_iee_image_' . $attachment_id );
+}
+add_action( 'edit_attachment', 'bs24_iee_delete_transient_on_attachment_update');
 
 /**
  * Register custom REST API endpoint for getting image credit data by javascript
@@ -127,17 +149,33 @@ function bs24_iee_get_image_url( $data ){
     $attachment_url = get_site_url() . $data->get_param('url');
     $attachment_id = bs24_get_attachment_id_by_url( $attachment_url );
 
-    $medium_image = wp_get_attachment_image_url( $attachment_id, 'medium' );
-    $small_image = wp_get_attachment_image_url( $attachment_id, 'thumbnail' );
+    //set transient key with attachment id
+    $transient_key = 'bs24_iee_image_' . $attachment_id;
+    
+    //check for transient cache is exist or not
+    if( false == ( $image_cache_data = get_transient( $transient_key ) ) ){
+        $medium_image = wp_get_attachment_image_url( $attachment_id, 'medium' );
+        $small_image  = wp_get_attachment_image_url( $attachment_id, 'thumbnail' );
+    
+        //get credit text
+        $credit_text  = get_post_meta( $attachment_id, 'bs24_iee_image_credit', true );
 
-    $credit_text   = !empty( get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) ) ? get_post_meta( $attachment_id, 'bs24_iee_image_credit', true ) : __( 'Badsanieren24', 'bs24-image-external-embed' );
+        //use default value if get post meta is not exist
+        if( empty( $credit_text ) ){
+            $credit_text = __( 'Badsanieren24', 'bs24-image-external-embed' );
+        }
 
-    return new WP_REST_Response( array(
-        'credit_text' => $credit_text,
-        'img_caption' => wp_get_attachment_caption( $attachment_id ),
-        'img_medium'  => $medium_image,
-        'img_small'   => $small_image,
-    ) );
+        $image_cache_data = array(
+            'credit_text' => $credit_text,
+            'img_caption' => wp_get_attachment_caption( $attachment_id ),
+            'img_medium'  => $medium_image,
+            'img_small'   => $small_image,
+        );
+
+        set_transient( $transient_key, $image_cache_data, 30 * DAY_IN_SECONDS );
+    }
+
+    return new WP_REST_Response( $image_cache_data );
 }
 
 /**

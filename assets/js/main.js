@@ -26,9 +26,9 @@
             fetch_image_meta( bs24Data.siteUrl, imgUrl ).then( function( imageCredit ){
                 $('#bs24-embed-large-image-input').val( getEmbedImage( imageCredit.img_medium, largeImageAttr, imageCredit ) );
                 $('#bs24-embed-small-image-input').val( getEmbedImage( imageCredit.img_small, smallImageAttr, imageCredit ) );
-
-                $('#bs24-embed-popup').show();
             } );
+
+            $('#bs24-embed-popup').show();
         });
 
         $('.bs24-embed-image-input').on('focus click', function(){
@@ -53,13 +53,16 @@
             if( imageCredit.img_caption ){
                 caption = ' - '+imageCredit.img_caption;
             }
+
+            const imageCreditText = imageCredit.credit_text + caption;
+
             let html = `<div style="text-align: center"><a href="${pageLink}" rel="follow" target="_blank">
-                        <img src="${imgSrc}" alt="${imageCredit.credit_text + caption}" ${imageAttr} nopin="nopin" ondragstart="return false;" onselectstart="return false;" oncontextmenu="return false;" />
+                        <img src="${imgSrc}" alt="${imageCreditText}" title="${imageCreditText}" ${imageAttr} nopin="nopin" ondragstart="return false;" onselectstart="return false;" oncontextmenu="return false;" />
                     </a></div>`;
             
             //check if image credit object is exist
             if( typeof imageCredit === 'object' && imageCredit !== null && imageCredit.credit_text !== '' ){
-                html += `<div style='color:#444; text-align: center'><small><a style="text-decoration:none;color:#444;" href="https://www.badsanieren24.de" target="_blank">${imageCredit.credit_text + caption}</a></small></div>`;
+                html += `<div style='color:#444; text-align: center'><small><a style="text-decoration:none;color:#444;" href="https://www.badsanieren24.de" target="_blank">${imageCreditText}</a></small></div>`;
             }
 
             return minifyHTML( html );
