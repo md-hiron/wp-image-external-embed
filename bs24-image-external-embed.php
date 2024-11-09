@@ -193,7 +193,7 @@ function bs24_get_attachment_id_by_url( $url ){
     $url = esc_url_raw( $url );
 
     //filter url without any dimention text
-    $filtered_url = preg_replace( '/-\d+x\d+(?=\.(jpg|jpeg|png|gif|webp)$)/i', '', $url );
+    $filtered_url = preg_replace( '/-\d+x\d+(?=\.(?:jpg|jpeg|png|gif|webp)(?:\.webp)?$)/i', '', $url );
 
     //filter url if there is multiple extension
     $filtered_url = preg_replace( '/\.(jpg|jpeg|png|gif)\.webp$/i', '.webp', $filtered_url );
