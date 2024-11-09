@@ -189,7 +189,11 @@ function bs24_get_attachment_id_by_url( $url ){
     //sanitize url
     $url = esc_url_raw( $url );
 
-    $filtered_url = preg_replace('/-\d+x\d+(?=\.(jpg|jpeg|png|gif|webp)$)/i', '', $url);
+    //filter url without any dimention text
+    $filtered_url = preg_replace( '/-\d+x\d+(?=\.(jpg|jpeg|png|gif|webp)$)/i', '', $url );
+
+    //filter url if there is multiple extension
+    $filtered_url = preg_replace( '/\.(jpg|jpeg|png|gif)\.webp$/i', '.webp', $filtered_url );
 
     // Define a list of common extensions to try
     $extensions = array('jpg', 'jpeg', 'png', 'gif', 'webp');
