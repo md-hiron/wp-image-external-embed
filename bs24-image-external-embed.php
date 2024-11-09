@@ -6,7 +6,7 @@
  * @wordpress-plugin
  * Plugin Name:       BS24 Image External Embed
  * Description:       A WordPress plugin that embed image for external use
- * Version:           1.0.8
+ * Version:           1.1.1
  * Author:            Md Hiron Mia
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -34,8 +34,8 @@ add_action( 'plugins_loaded', 'bs24_iee_textdomain_load' );
  * Enqueue necessary scripts and styles 
  */
 function bs24_iee_enqueue_scrips(){
-    wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.9' );
-    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.7', true );
+    wp_enqueue_style( 'bs24-iee-style', BS24_IEE_URL . 'assets/css/main.css', array(), '1.1.1' );
+    wp_enqueue_script( 'bs24-iee-script', BS24_IEE_URL . 'assets/js/main.js', array('jquery'), '1.1.2', true );
     wp_localize_script( 'bs24-iee-script', 'bs24Data', array(
         'siteUrl' => get_site_url()
     ) );
@@ -150,8 +150,23 @@ function bs24_get_attachment_id_by_url( $url ){
 
     $filtered_url = preg_replace('/-\d+x\d+(?=\.(jpg|jpeg|png|gif|webp)$)/i', '', $url);
 
-    // using WP built in function to get attachment id from url
-    $attachment_id = attachment_url_to_postid( $filtered_url );
+    // Define a list of common extensions to try
+    $extensions = array('jpg', 'jpeg', 'png', 'gif', 'webp');
 
-    return $attachment_id ? intval( $attachment_id ) : false;
+    // Attempt to get the attachment ID by trying each extension
+    foreach ($extensions as $ext) {
+        // Replace the file extension with the current one
+        $test_url = preg_replace('/\.(jpg|jpeg|png|gif|webp)$/i', '.' . $ext, $filtered_url);
+
+        // Attempt to get the attachment ID with the modified URL
+        $attachment_id = attachment_url_to_postid( $test_url );
+
+        // If a valid attachment ID is found, return it
+        if( $attachment_id ) {
+            return intval( $attachment_id );
+        }
+    }
+
+    // Return false if no match is found
+    return false;
 }

@@ -5,7 +5,6 @@
             const imgSrc    = $(this).attr('src');
             const imgWidth  = Number( $(this).attr('width') );
             const imgHeight = Number( $(this).attr('height') );
-            const imgAlt    = $(this).attr('alt');
 
             const largeImgDimentions = getImageScaleDimensions( imgWidth, imgHeight, 500  );
             const smallImgDimentions = getImageScaleDimensions( imgWidth, imgHeight, 320  );
@@ -55,12 +54,12 @@
                 caption = ' - '+imageCredit.img_caption;
             }
             let html = `<div style="text-align: center"><a href="${pageLink}" rel="follow" target="_blank">
-                        <img src="${imgSrc}" alt="${imageCredit?.credit_text + caption}" ${imageAttr} nopin="nopin" ondragstart="return false;" onselectstart="return false;" oncontextmenu="return false;" />
+                        <img src="${imgSrc}" alt="${imageCredit.credit_text + caption}" ${imageAttr} nopin="nopin" ondragstart="return false;" onselectstart="return false;" oncontextmenu="return false;" />
                     </a></div>`;
             
             //check if image credit object is exist
             if( typeof imageCredit === 'object' && imageCredit !== null && imageCredit.credit_text !== '' ){
-                html += `<div style='color:#444; text-align: center'><small><a style="text-decoration:none;color:#444;" href="https://www.badsanieren24.de" target="_blank">${imageCredit?.credit_text + caption}</a></small></div>`;
+                html += `<div style='color:#444; text-align: center'><small><a style="text-decoration:none;color:#444;" href="https://www.badsanieren24.de" target="_blank">${imageCredit.credit_text + caption}</a></small></div>`;
             }
 
             return minifyHTML( html );
