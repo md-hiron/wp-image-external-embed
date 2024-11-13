@@ -41,6 +41,17 @@
             $('#bs24-embed-small-image-input').val('');
         });
 
+        $(document).on('click', function(e){
+            const popupContainer = $(".bs24-embed-popup-container");
+            console.log(e.target)
+            console.log(popupContainer);
+            if( ! popupContainer.is(e.target) && popupContainer.has(e.target).length === 0){
+                $('#bs24-embed-popup').hide();
+                $('#bs24-embed-large-image-input').val('');
+                $('#bs24-embed-small-image-input').val('');
+            }
+        });
+
         /**
          * 
          * @param {string} imgSrc 
