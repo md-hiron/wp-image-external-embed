@@ -69,7 +69,7 @@ function bs24_iee_add_embed_popup(){
                     <h4><?php _e( 'Kleines Bild (320 Pixel):','bs24-image-external-embed' );?></h4>
                     <textarea id="bs24-embed-small-image-input" class="bs24-embed-image-input" readonly></textarea>
                 </div>
-                <p class="bs24-embed-popup-desc"><?php _e( '' ); echo wp_kses_post( __('Dieses Bild wird Ihnen zur Verfügung gestellt und unterliegt den ', 'bs24-image-external-embed') . '<a href="https://www.badsanieren24.de/haftungsausschluss" target="_blank">'. __( 'Nutzungsbedingungen', 'bs24-image-external-embed' ) .'</a>'. __( ' von Badsanieren24', 'bs24-image-external-embed' ) )?></p>
+                <p class="bs24-embed-popup-desc"><?php _e( '' ); echo wp_kses_post( __('Dieses Bild wird Ihnen zur Verfügung gestellt und unterliegt den ', 'bs24-image-external-embed') . '<a href="https://www.badsanieren24.de/haftungsausschluss" target="_blank">'. __( 'Nutzungsbedingungen', 'bs24-image-external-embed' ) .'</a>'. __( ' von Badsanieren24. Das Verwenden von Bildern ist nur mittels des Codes zur Einbettung erlaubt.', 'bs24-image-external-embed' ) )?></p>
             </div>
             <div class="bs24-embed-popup-footer">
                 <button class="bs24-embed-popup-close"><?php _e( 'Ok', 'bs24-image-external-embed' );?></button>
